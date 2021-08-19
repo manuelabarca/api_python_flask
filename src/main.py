@@ -39,6 +39,15 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+
+@app.route('/post', methods=['POST'])
+def create_post():
+    body = request.get_json()
+    if body is None:
+        return "The request body is null or undefined", 400
+
+    return jsonify({"message": "post created"}), 200
+
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))

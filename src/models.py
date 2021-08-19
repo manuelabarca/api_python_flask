@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 class User(db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
@@ -17,3 +18,8 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+class Post(db.Model):
+    __tablename__ = 'post'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    description = db.Column(db.String(255), nullable=False)

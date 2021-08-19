@@ -27,6 +27,7 @@ class Post(db.Model):
     __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref=db.backref('post_created_by_me', lazy='dynamic'))
     description = db.Column(db.String(255), nullable=False)
 
     def serialize(self):
@@ -59,9 +60,9 @@ class Favorite(db.Model):
     __tablename__ = 'favorite'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User', backref=db.backref('children', lazy='dynamic'))
+    user = db.relationship('User', backref=db.backref('my_favorite_list', lazy='dynamic'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
-    post = db.relationship('Post', backref=db.backref('children', lazy='dynamic'))
+    post = db.relationship('Post', backref=db.backref('my_favorite_list', lazy='dynamic'))
 
     def serialize(self):
         return {

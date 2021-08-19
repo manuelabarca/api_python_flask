@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Post, Favorite
 #from models import Person
 
 app = Flask(__name__)
@@ -44,9 +44,45 @@ def handle_hello():
 def create_post():
     body = request.get_json()
     if body is None:
-        return "The request body is null or undefined", 400
+        return {"error": "The body is null or undefined"}, 400
+    
+    user = User.get_user(body['email'])
+    user_id = user.id
 
-    return jsonify({"message": "post created"}), 200
+    Post.create_post(user_id, body['description'])
+    
+    return {"message": "post created"}, 200
+
+@app.route('/post', methods=['GET'])
+def get_all_post():
+    posts = Post.get_all_post()
+
+    return jsonify(posts), 200
+
+
+@app.route('/favorite', methods=['POST'])
+def create_favorite():
+    body = request.get_json()
+    if body is None:
+        return {"error": "Body is empty or null"}, 400
+    
+    user = User.get_user(body['email'])
+    user_id = user.id
+
+    owner_post = User.get_user(body['owner_email_post'])
+    owner_id = owner_post.id
+
+    post = Post.get_post(owner_id)
+    post_id = post.id
+
+    Favorite.create_favorite(user_id, post_id)
+
+    return {"message": "Favorite created OK"}, 200
+
+@app.route('/favorite', methods=['GET'])
+def get_all_favorites():
+    favorites = Favorite.get_all_favorites()
+    return jsonify(favorites), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

@@ -50,6 +50,11 @@ class Post(db.Model):
         post = Post.query.filter_by(user_id=user_id).first()
         return post
 
+    def delete_post(post_id):
+        post = Post.query.get(post_id)
+        db.session.delete(post)
+        db.session.commit()
+
 class Favorite(db.Model):
     __tablename__ = 'favorite'
     id = db.Column(db.Integer, primary_key=True)

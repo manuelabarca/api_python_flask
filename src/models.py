@@ -33,7 +33,7 @@ class Post(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user_id": self.user_id,
+            "user_owner": User.serialize(self.user),
             "description": self.description
         }
     
@@ -67,8 +67,8 @@ class Favorite(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user_id": self.user_id,
-            "post_id": self.post_id
+            "user_add_favorite": User.serialize(self.user),
+            "post_data": Post.serialize(self.post)
         }
 
     def create_favorite(user_id, post_id):

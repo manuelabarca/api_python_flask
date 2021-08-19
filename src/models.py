@@ -59,7 +59,9 @@ class Favorite(db.Model):
     __tablename__ = 'favorite'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref=db.backref('children', lazy='dynamic'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    post = db.relationship('Post', backref=db.backref('children', lazy='dynamic'))
 
     def serialize(self):
         return {

@@ -63,16 +63,19 @@ class Favorite(db.Model):
     user = db.relationship('User', backref=db.backref('my_favorite_list', lazy='dynamic'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     post = db.relationship('Post', backref=db.backref('my_favorite_list', lazy='dynamic'))
+    planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'))
+    planet = db.relationship('Planet', backref=db.backref('my_favorite_list', lazy='dynamic'))
 
     def serialize(self):
         return {
             "id": self.id,
-            "user_add_favorite": User.serialize(self.user),
-            "post_data": Post.serialize(self.post)
+            "user_add_favorite": self.user_id,
+            "post_data": self.post_id,
+            "planet_data": self.planet_id
         }
 
-    def create_favorite(user_id, post_id):
-        favorite = Favorite(user_id=user_id, post_id=post_id)
+    def create_favorite(user_id, post_id, planet_id):
+        favorite = Favorite(user_id=user_id, post_id=post_id, planet_id=planet_id)
         db.session.add(favorite)
         db.session.commit()
 
@@ -80,3 +83,27 @@ class Favorite(db.Model):
         favorites = Favorite.query.all()
         favorites = list(map(lambda favorite: favorite.serialize(), favorites))
         return favorites
+
+    def get_favorites_by_id(user_id):
+        favorites = Favorite.query.filter_by(user_id=user_id)
+        favorites = list(map(lambda favorite: favorite.serialize(), favorites))
+        return favorites
+
+
+class Planet(db.Model):
+    __tablename__ = 'planet'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    size = db.Column(db.Integer, nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "size": self.size
+        }
+
+    def create_planet(name, size):
+        planet = Planet(name=name, size=size)
+        db.session.add(planet)
+        db.session.commit()

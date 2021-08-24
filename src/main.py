@@ -58,7 +58,7 @@ def create_post():
     
     return {"message": "post created"}, 200
 
-@app.route('/post/', methods=['GET'])
+@app.route('/post', methods=['GET'])
 @jwt_required()
 def get_all_post():
     posts = Post.get_all_post()
@@ -108,8 +108,12 @@ def get_favorites_by_id(user_id):
 
 @app.route('/login', methods=['POST'])
 def sign_in():
-    email = request.json.get("email", None)
-    password = request.json.get("password", None)
+    body = request.get_json()
+    if body is None:
+        return jsonify({"error": "Body is empty or null"}), 400
+
+    email = body['email']
+    password = body['password']
 
     user = User.query.filter_by(email=email, password=password).first()
     if User is None:
